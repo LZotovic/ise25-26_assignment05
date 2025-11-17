@@ -44,6 +44,7 @@ public interface PosService {
     @NonNull Pos getById(@NonNull Long id) throws PosNotFoundException;
 
     // TODO: Add a new getByName method to enable fetching POS by name.
+    @NonNull Pos getByName(@NonNull String name) throws PosNotFoundException;
 
     /**
      * Creates a new POS or updates an existing one.
@@ -65,6 +66,7 @@ public interface PosService {
      * @throws PosNotFoundException if attempting to update a POS that does not exist
      * @throws DuplicatePosNameException if a POS with the same name already exists
      */
+
     @NonNull Pos upsert(@NonNull Pos pos) throws PosNotFoundException, DuplicatePosNameException;
 
     /**

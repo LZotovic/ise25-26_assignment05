@@ -10,6 +10,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -92,6 +93,11 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add Given step for new scenario
+    @Given("following POS exist")
+    public void followingPOSexist(List<PosDto> posList) {
+        createdPosList = createPos(posList);
+        assertThat(createdPosList).hasSize(posList.size());
+    }
 
     // When -----------------------------------------------------------------------
 
@@ -102,6 +108,30 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add When step for new scenario
+    @When("I update the POS with name {string} to have description {string}")
+    public void updatePosWithNameToHaveDescription(String name, String description){
+        PosDto pos = retrievePosByName(name);
+        PosDto update_pos = PosDto.builder()
+                .id(pos.id())
+                .name(pos.name())
+                .description(description)
+                .type(pos.type())
+                .campus(pos.campus())
+                .street(pos.street())
+                .houseNumber(pos.houseNumber())
+                .postalCode(pos.postalCode())
+                .city(pos.city())
+                .build();
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(update_pos)
+                .when()
+                .put("/api/pos/{id}", update_pos.id())
+                .then()
+                .statusCode(200);
+    }
+
 
     // Then -----------------------------------------------------------------------
 
@@ -114,4 +144,9 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add Then step for new scenario
+    @Then("the POS with name {string} should have description {string}")
+    public void thePosWithNameShouldHaveDescription(String name, String new_description) {
+        PosDto update_pos = retrievePosByName(name);
+        assertThat(new_description).isEqualTo(update_pos.description());
+    }
 }
